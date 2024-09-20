@@ -1,0 +1,3 @@
+<allelle> ::=  0|1
+<subject> ::= 8*8<allelle>  ; allows for 256 subjects, there are currently 80 A-levels, 20 T-levels and 14 BTECs
+<classroom> ::= 7*7<allelle>  ; allows for  classrooms, 
