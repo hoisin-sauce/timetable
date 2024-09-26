@@ -10,3 +10,4 @@ var startingMotion map[string]uint32 = map[string]uint32{"timeSlot": 26, "teache
 var masks          map[string]uint32 = map[string]uint32{"timeSlot": 4227858432, "teacher": 133693440, "class": 491520, "classroom": 32512, "subject": 255}
 var checkMap       map[string]uint32 = map[string]uint32{"timeSlot": 1,  "teacher": 2,  "class": 4,   "classroom": 8,  "subject": 16}
 var comparisonChecks       [3]uint32 = [3]uint32{checkMap["teacher"] | checkMap["timeSlot"], checkMap["class"] | checkMap["timeSlot"], checkMap["classroom"] | checkMap["timeSlot"]}
+const maxUint                 uint32 = 4294967295
