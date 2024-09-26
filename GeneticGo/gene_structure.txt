@@ -1,7 +1,7 @@
 <allele> ::=  0|1
-<subject> ::= 6*8<allele>  ; allows for 256 subjects, there are currently 80 A-levels, 20 T-levels and 14 BTECs
-<classroom> ::= 4*7<allele>  ; allows for 128 classrooms, at national classroom size limits this means that up to 3840 students can be in lesson at once
-<teacher> ::= 4*8<allele>  ; allows for 256 teachers, this ensures that there will always be enough teachers per classroom
-<class> ::= 3*4<allele>  ; gives 16 classes available per subject
-<timeslot> ::= 5*6<allele>  ; 32-64 timeslots available. maximum of 12 lessons per day. Limits can be applied to exclude some values during next generation generation
+<subject> ::= 8*8<allele>  ; allows for 256 subjects, there are currently 80 A-levels, 20 T-levels and 14 BTECs
+<classroom> ::= 7*7<allele>  ; allows for 128 classrooms, at national classroom size limits this means that up to 3840 students can be in lesson at once
+<teacher> ::= 8*8<allele>  ; allows for 256 teachers, this ensures that there will always be enough teachers per classroom
+<class> ::= 4*4<allele>  ; gives 16 classes available per subject
+<timeslot> ::= 8*6<allele>  ; 32-64 timeslots available. maximum of 12 lessons per day. Limits can be applied to exclude some values during next generation generation
 <gene> ::= <timeslot><teacher><class><classroom><subject> ; minimum of 2^22 possible combinations, maximum of 2^32 combinations FITS WITHIN UINT32 :)
