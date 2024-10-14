@@ -118,3 +118,14 @@ func GetOverlapFailed(overlap uint32)(failed int){
 
 	return
 }
+
+func BenchmarkGetFitness(b *testing.B){
+	classCounts, classCodes, _ := SetupEnvironment()
+	population := InitialisePopulation(classCodes, classCounts, 4)
+	i := 0
+	for range b.N{
+		GetFitness(population[i], population)
+		i++;
+		i %= len(population)
+	}
+}

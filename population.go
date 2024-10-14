@@ -25,7 +25,7 @@ const maxUint                 uint32 = ^uint32(0)
 
 // map subject to unique identifier
 // map subject to number of classes
-func generateClassMaps(subjects []string, classes []int)(subjectClassCount map[string]int, subjectClassCodes map[string]int){
+func GenerateClassMaps(subjects []string, classes []int)(subjectClassCount map[string]int, subjectClassCodes map[string]int){
 	subjectClassCount = make(map[string]int)
 	subjectClassCodes = make(map[string]int)
 
@@ -38,7 +38,7 @@ func generateClassMaps(subjects []string, classes []int)(subjectClassCount map[s
 }
 
 // assign unique identifier to teachers
-func generateTeacherMap(teachers []string)(teacherMap map[int]string){
+func GenerateTeacherMap(teachers []string)(teacherMap map[int]string){
 	teacherMap = make(map[int]string)
 	for i := 0; i < len(teachers); i++{
 		teacherMap[i] = teachers[i]
@@ -49,27 +49,27 @@ func generateTeacherMap(teachers []string)(teacherMap map[int]string){
 
 
 // set the constraints that all genes should abide by
-func getConstraints(days int, lessonsPerDay int, classroomCount int, teacherMap map[int]string, classCodes map[string]int, classCounts map[string]int)(_constraints map[string]uint32){
+func GetConstraints(days int, lessonsPerDay int, classroomCount int, teacherMap map[int]string, classCodes map[string]int, classCounts map[string]int)(_constraints map[string]uint32){
 	_constraints = make(map[string]uint32)
 
-	_constraints["teacher"] = uint32(getMaxKey(teacherMap) + 1)
+	_constraints["teacher"] = uint32(GetMaxKey(teacherMap) + 1)
 
 	_constraints["classroom"] = uint32(classroomCount + 1)
 
-	_constraints["subject"] = uint32(getMaxValue(classCodes) + 1)
+	_constraints["subject"] = uint32(GetMaxValue(classCodes) + 1)
 
 	_constraints["timeSlot"] = uint32(days * lessonsPerDay + 1)
 
-	_constraints["class"] = uint32(getMaxValue(classCounts) + 1)
+	_constraints["class"] = uint32(GetMaxValue(classCounts) + 1)
 	return
 }
 
-func setConstraints(days int, lessonsPerDay int, classroomCount int, teacherMap map[int]string, classCodes map[string]int, classCounts map[string]int){
-	constraints = getConstraints(days, lessonsPerDay, classroomCount, teacherMap, classCodes, classCounts)
+func SetConstraints(days int, lessonsPerDay int, classroomCount int, teacherMap map[int]string, classCodes map[string]int, classCounts map[string]int){
+	constraints = GetConstraints(days, lessonsPerDay, classroomCount, teacherMap, classCodes, classCounts)
 }
 
 // get the maximum key
-func getMaxKey(m map[int]string)(max int){
+func GetMaxKey(m map[int]string)(max int){
 	for key, _ := range m{
 		if key > max{
 			max = key
@@ -80,7 +80,7 @@ func getMaxKey(m map[int]string)(max int){
 
 
 // get the maximum value
-func getMaxValue(m map[string]int)(max int){
+func GetMaxValue(m map[string]int)(max int){
 	for _, value := range m{
 		if value > max{
 			max = value
@@ -89,7 +89,7 @@ func getMaxValue(m map[string]int)(max int){
 	return
 }
 
-func initialisePopulation(subjectCodes map[string]int, classCounts map[string]int, lessonsPerClass int)(population []chromosome){
+func InitialisePopulation(subjectCodes map[string]int, classCounts map[string]int, lessonsPerClass int)(population []chromosome){
 	var (
 		chromo chromosome
 	)
@@ -102,7 +102,7 @@ func initialisePopulation(subjectCodes map[string]int, classCounts map[string]in
 		for set := 0; set < classCounts[subject]; set++{
 
 			for lesson := 0; lesson < lessonsPerClass; lesson++{
-				chromo = generateChromosome(code, set)
+				chromo = GenerateChromosome(code, set)
 				population = append(population, chromo)
 			}
 		}
@@ -110,22 +110,22 @@ func initialisePopulation(subjectCodes map[string]int, classCounts map[string]in
 	return
 }
 
-func generateChromosome(subjectCode int, classSet int)(chromo chromosome){
+func GenerateChromosome(subjectCode int, classSet int)(chromo chromosome){
 	var gene uint32
 	
 	for section, _ := range constraints{
-		updateMaskedPortion(&gene, section, rand.Uint32N(constraints[section]))
+		UpdateMaskedPortion(&gene, section, rand.Uint32N(constraints[section]))
 	}
 
-	updateMaskedPortion(&gene, "subject", uint32(subjectCode))
-	updateMaskedPortion(&gene, "class", uint32(classSet))
+	UpdateMaskedPortion(&gene, "subject", uint32(subjectCode))
+	UpdateMaskedPortion(&gene, "class", uint32(classSet))
 
 	chromo = chromosome{gene: gene, fitness: 0}
 
 	return
 }
 
-func updateMaskedPortion(original *uint32, mask string, newValue uint32){
+func UpdateMaskedPortion(original *uint32, mask string, newValue uint32){
 	*original = *original & (^masks[mask])
 	*original |= newValue >> startingMotion[mask]
 }

@@ -4,14 +4,8 @@ import "testing"
 
 func TestInitialisePopulation(t *testing.T){
 
-	teachers := getTestTeachers("a", 10)
-	subjects := []string{"maths", "english", "science", "history", "it"}
-	classes  := []int{10, 10, 10, 5, 5}
-
-	classCounts, classCodes := generateClassMaps(subjects, classes)
-	teacherCodeMap := generateTeacherMap(teachers)
-	setConstraints(5, 6, 127, teacherCodeMap, classCodes, classCounts)
-	population := initialisePopulation(classCodes, classCounts, 4)
+	classCounts, classCodes, _ := SetupEnvironment()
+	population := InitialisePopulation(classCodes, classCounts, 4)
 
 	if len(population) == 0{
 		t.Error("Population not returned")
@@ -26,9 +20,20 @@ func TestInitialisePopulation(t *testing.T){
 	}
 }
 
-func getTestTeachers(name string, amount int)(teachers []string){
+func GetTestTeachers(name string, amount int)(teachers []string){
 	for i := 0; i < amount; i++{
 		teachers = append(teachers, name)
 	}
+	return
+}
+
+func SetupEnvironment()(classCounts map[string] int, classCodes map[string]int, teacherCodeMap map[int]string){
+	teachers := GetTestTeachers("a", 10)
+	subjects := []string{"maths", "english", "science", "history", "it"}
+	classes  := []int{10, 10, 10, 5, 5}
+
+	classCounts, classCodes = GenerateClassMaps(subjects, classes)
+	teacherCodeMap = GenerateTeacherMap(teachers)
+	SetConstraints(5, 6, 127, teacherCodeMap, classCodes, classCounts)
 	return
 }

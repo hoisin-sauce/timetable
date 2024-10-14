@@ -93,7 +93,6 @@ func GetFitness(c chromosome, population []chromosome)(fitness float64){
 	// calculate GetFitness
 	overlap, total = float64(overlapCount), float64(totalChecks)
 	fitness = (total - overlap)/ total
-	c.fitness = fitness
 
 	return
 
