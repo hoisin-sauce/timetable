@@ -1,3 +1,3 @@
-module genetic
+module timetable
 
 go 1.23.1

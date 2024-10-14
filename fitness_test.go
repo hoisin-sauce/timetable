@@ -44,7 +44,6 @@ func GetRandomChromosome()chromosome{
 
 	gene = rand.Uint32()
 	fitness = 0
-	gene = 0
 	individual = chromosome{gene: gene, fitness:fitness}
 	
 	return individual
@@ -64,7 +63,7 @@ func CreateOverlap(inputChromosome chromosome, overlapPortions uint32)(outputChr
 	return
 }
 
-func TestMapping(t *testing.T){
+func TestMapXOR(t *testing.T){
 
 	var totalMask uint32 = 0
 	for _, mask := range masks{
@@ -76,7 +75,10 @@ func TestMapping(t *testing.T){
 		var bits string = strconv.FormatUint(uint64(totalMask), 2)
 		t.Error("Masks do not xor to max value, Bit represenation: ", bits)
 	}
+	
+}
 
+func TestIndividualMapOverlap(t *testing.T){
 	for key1, mask1 := range masks{
 		for key2, mask2 := range masks{
 			if key1 == key2{
@@ -90,4 +92,29 @@ func TestMapping(t *testing.T){
 			
 		}
 	}
+}
+
+func TestCheckOverlapPortions(t *testing.T){
+	var i uint32
+	for i = 0; i < 32; i++{
+		expected := GetOverlapFailed(i)
+		failed, checked := CheckOverlapPortions(i)
+
+		if expected != failed{
+			t.Error("Error when checking overlap region " , strconv.FormatUint(uint64(i), 2), " expected: ", expected, "actual: ", failed , " Checks made: ", checked)
+		}
+
+	}
+}
+
+func GetOverlapFailed(overlap uint32)(failed int){
+	if overlap & 1 == 0{
+		return
+	}
+
+	failed += int( (overlap & checkMap["teacher"]) >> 1 )
+	failed += int( (overlap & checkMap["class"]) >> 2 )
+	failed += int( (overlap & checkMap["classroom"]) >> 3 )
+
+	return
 }

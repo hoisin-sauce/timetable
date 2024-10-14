@@ -1,4 +1,4 @@
-package main
+package timetable
 
 import "fmt"
 

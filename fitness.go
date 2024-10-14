@@ -1,4 +1,4 @@
-package main
+package timetable
 
 func GetBoundsPenalty(c chromosome, populationSize int)(penalty int){
 	// punish the individual so that it does not survive if any of its values are outside the available constraints
@@ -7,11 +7,16 @@ func GetBoundsPenalty(c chromosome, populationSize int)(penalty int){
 	boundsPenalty := populationSize * len(comparisonChecks) + 1
 
 	// for each of them, mask so that it is only that section then bitshift to get the actual value, then check with constraints
-	for region, mask := range masks{
-		if (c.gene & mask) >> startingMotion[region] >= constraints[region]{
+	for region, _ := range masks{
+		if OutsideRegion(c.gene, region){
 			penalty += boundsPenalty
 		}
 	}
+	return
+}
+
+func OutsideRegion(gene uint32, region string)(isWithinRegion bool){
+	isWithinRegion = (gene & masks[region]) >> startingMotion[region] >= constraints[region]
 	return
 }
 
@@ -34,10 +39,9 @@ func GetOverlapPortions(chromosome1 chromosome, chromosome2 chromosome)(overlapP
 }
 
 func CheckOverlapPortions(overlapPortions uint32)(checksFailed int, checkCount int){
-
+	checkCount = len(comparisonChecks)
 	// got through all checks
 	for j := 0; j < len(comparisonChecks); j++ {
-		checkCount++
 
 		// isolate areas in check and check if equal to the check
 		if (comparisonChecks[j] & overlapPortions) == comparisonChecks[j]{
