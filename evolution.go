@@ -12,6 +12,11 @@ func SelectElites(n int, population []chromosome)(elites []chromosome){
 	return
 }
 
+func SelectElitesQsort(n int, population []chromosome)(elites []chromosome){
+	elites = Quicksort(population, 0, len(population) - 1)[:n]
+	return
+}
+
 func Insert(elites []chromosome, newElite chromosome)(Nelites[] chromosome){
 	Nelites = elites
 	Nelites[0] = newElite
