@@ -119,6 +119,24 @@ func GetOverlapFailed(overlap uint32)(failed int){
 	return
 }
 
+func BenchmarkOverlapBitwise(b *testing.B){
+	var i uint32 = 0
+	for range b.N{
+		CheckOverlapPortions(i)
+		i++;
+		i %= 32
+	}
+}
+
+func BenchmarkOverlapAdditive(b *testing.B){
+	var i uint32 = 0
+	for range b.N{
+		GetOverlapFailed(i)
+		i++;
+		i %= 32
+	}
+}
+
 func BenchmarkGetFitness(b *testing.B){
 	classCounts, classCodes, _ := SetupEnvironment()
 	population := InitialisePopulation(classCodes, classCounts, 4)
