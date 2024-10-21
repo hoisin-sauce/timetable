@@ -1,5 +1,8 @@
 package timetable
 
+import "slices"
+import "math/rand/v2"
+
 func SelectElites(n int, population []chromosome)(elites []chromosome){
 	elites = population[:n]
 	elites = Quicksort(elites, 0, n-1) // ascending quicksort on fitness
@@ -65,4 +68,36 @@ func Quicksort(elites []chromosome, min int, max int)(outputElites []chromosome)
 
 	outputElites = elites
 	return
+}
+
+func CreateMutations(population []chromosome, elites []chromosome){
+	var fitness float64
+	var mutated chromosome
+	for i, chromo := range population{
+		if !slices.Contains(elites, chromo){
+			mutated = MutateChromosome(chromo)
+			fitness = GetFitness(mutated, population)
+
+			if fitness < chromo.fitness{
+				continue
+			}
+
+			if rand.Float64() <= monteCarloConstant{
+				continue
+			}
+
+			mutated.fitness = fitness
+			population[i] = mutated
+		}
+	}
+}
+
+func MutateChromosome(chromo chromosome)chromosome{
+	var bit uint32
+	for bit == 0{
+		bit = (^protectedGene) & (1 << rand.IntN(28))
+	}
+	chromo.gene = chromo.gene ^ bit
+
+	return chromo
 }
