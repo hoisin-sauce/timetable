@@ -4,4 +4,4 @@
 <teacher> ::= 8*8<allele>  ; allows for 256 teachers, this ensures that there will always be enough teachers per classroom
 <class> ::= 4*4<allele>  ; gives 16 classes available per subject
 <timeslot> ::= 6*6<allele>  ; 64 timeslots available. maximum of 12 lessons per day. Limits can be applied to exclude some values during next generation generation
-<gene> ::= <timeslot><teacher><class><classroom><subject> ; maximum of 2^32 combinations FITS WITHIN UINT32 :)
+<gene> ::= <class><subject><timeslot><teacher><classroom> ; maximum of 2^32 combinations FITS WITHIN UINT32 :)

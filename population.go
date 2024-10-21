@@ -17,9 +17,11 @@ func getBitMask(length int, shift int)(mask uint32){
 //var teacherCodeMap map[int]string = generateTeacherMap(teachers)
 var constraints    map[string]uint32// = getConstraints(5, 6, 127, teacherCodeMap, classCodes, classCounts)
 var startingMotion map[string]uint32 = map[string]uint32{"timeSlot": 26, "teacher": 18, "class": 14,  "classroom":7,   "subject": 0}
-var masks          map[string]uint32 = map[string]uint32{"timeSlot": getBitMask(6, 26), "teacher": getBitMask(8, 18), "class": getBitMask(4, 14), "classroom": getBitMask(7, 7), "subject": getBitMask(7, 0)}
+var masks          map[string]uint32 = map[string]uint32{"timeSlot": getBitMask(6, 15), "teacher": getBitMask(8, 7), "class": getBitMask(4, 28), "classroom": getBitMask(7, 0), "subject": getBitMask(7, 21)}
 var checkMap       map[string]uint32 = map[string]uint32{"timeSlot": 1,  "teacher": 2,  "class": 4,   "classroom": 8,  "subject": 16}
 var comparisonChecks       [3]uint32 = [3]uint32{checkMap["teacher"] | checkMap["timeSlot"], checkMap["class"] | checkMap["timeSlot"], checkMap["classroom"] | checkMap["timeSlot"]}
+var protectedGene             uint32 = masks["class"] | masks["subject"]
+const monteCarloConstant     float64 = 0.5
 const maxUint                 uint32 = ^uint32(0)
 
 
