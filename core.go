@@ -14,12 +14,11 @@ func GenerateTimetable(lessonsPerClass int, days int, lessonsPerDay int, classro
     teacherCodeMap = GenerateTeacherMap(teachers)
     SetConstraints(days, lessonsPerDay, classroomCount, teacherCodeMap, classCodes, classCounts)
     population = InitialisePopulation(classCodes, classCounts, lessonsPerClass)
-    i := GetMeanPopulationFitness(population)
-    for i < 0.5{
+    for GetMeanPopulationFitness(population) < 0.97{
         elites = SelectElites(eliteCount, population)
         CreateMutations(population, elites)
         i := GetMeanPopulationFitness(population)
-        fmt.Print(i)
+        fmt.Println(i)
     }
     return
 }

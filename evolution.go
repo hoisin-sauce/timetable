@@ -78,11 +78,7 @@ func CreateMutations(population []chromosome, elites []chromosome){
 			mutated = MutateChromosome(chromo)
 			fitness = GetFitness(mutated, population)
 
-			if fitness < chromo.fitness{
-				continue
-			}
-
-			if rand.Float64() <= monteCarloConstant{
+			if fitness < chromo.fitness && rand.Float64() <= monteCarloConstant{
 				continue
 			}
 
@@ -97,6 +93,7 @@ func MutateChromosome(chromo chromosome)chromosome{
 	for bit == 0{
 		bit = (^protectedGene) & (1 << rand.IntN(28))
 	}
+
 	chromo.gene = chromo.gene ^ bit
 
 	return chromo
