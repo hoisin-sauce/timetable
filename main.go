@@ -1,8 +1,6 @@
-package timetable
-
-import "fmt"
+package main
+import "timetable/core"
 
 func main(){
-	allmask := masks["timeSlot"] | masks["teacher"] | masks["classroom"] | masks["class"] | masks["subject"]
-	fmt.Print(allmask)
+	timetable.GenerateTimetable(4, 5, 5, 20, 5, []string{"Maths", "English", "Science"}, []int{5, 5, 5}, []string{"James", "Janet", "Julia", "Jules", "Jennifer", "Jyle", "Jyke"})
 }
