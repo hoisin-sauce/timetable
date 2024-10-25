@@ -97,3 +97,16 @@ func GetFitness(c chromosome, population []chromosome)(fitness float64){
 	return
 
 }
+
+// calculate fitness for population
+
+func GetMeanPopulationFitness(population []chromosome)(fitness float64){
+
+	for _, chromo := range population{
+		chromo.fitness = GetFitness(chromo, population)
+		fitness += chromo.fitness
+	}
+	fitness /= float64(len(population))
+
+	return
+}
