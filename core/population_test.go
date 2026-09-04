@@ -1,36 +1,44 @@
-package timetable
+package main
 
 import "testing"
 
-func TestInitialisePopulation(t *testing.T){
+func TestUpdateMaskedPortion(t *testing.T) {
+	var test uint32 = 0
+	test = UpdateMaskedPortion(test, "classroom", 127)
+	if test != 127 {
+		t.Error("Failed to set", test, "should be ", 127)
+	}
+}
+
+func TestInitialisePopulation(t *testing.T) {
 
 	classCounts, classCodes, _ := SetupEnvironment()
 	population := InitialisePopulation(classCodes, classCounts, 4)
 
-	if len(population) == 0{
+	if len(population) == 0 {
 		t.Error("Population not returned")
 	}
-	for i, c := range population{
-		for region, _ := range masks{
-			if OutsideRegion(c.gene, region){
-				valueInRegion := (c.gene & masks[region]) >> startingMotion[region] 
-				t.Error("Gene ", i, " is outside of ", region, " bounds upon initialisation. ", region, " is ", valueInRegion,", should be under ", constraints[region])
+	for i, c := range population {
+		for region, _ := range masks {
+			if OutsideRegion(c.gene, region) {
+				valueInRegion := (c.gene & masks[region]) >> startingMotion[region]
+				t.Error("Gene ", i, " is outside of ", region, " bounds upon initialisation. ", region, " is ", valueInRegion, ", should be under ", constraints[region])
 			}
 		}
 	}
 }
 
-func GetTestTeachers(name string, amount int)(teachers []string){
-	for i := 0; i < amount; i++{
+func GetTestTeachers(name string, amount int) (teachers []string) {
+	for i := 0; i < amount; i++ {
 		teachers = append(teachers, name)
 	}
 	return
 }
 
-func SetupEnvironment()(classCounts map[string] int, classCodes map[string]int, teacherCodeMap map[int]string){
+func SetupEnvironment() (classCounts map[string]int, classCodes map[string]int, teacherCodeMap map[int]string) {
 	teachers := GetTestTeachers("a", 10)
 	subjects := []string{"maths", "english", "science", "history", "it"}
-	classes  := []int{10, 10, 10, 5, 5}
+	classes := []int{10, 10, 10, 5, 5}
 
 	classCounts, classCodes = GenerateClassMaps(subjects, classes)
 	teacherCodeMap = GenerateTeacherMap(teachers)

@@ -1,34 +1,40 @@
-package timetable
+package main
 
-func GetBoundsPenalty(c chromosome, populationSize int)(penalty int){
+func GetBoundsPenalty(c chromosome, populationSize int) (penalty int) {
 	// punish the individual so that it does not survive if any of its values are outside the available constraints
 	// ensures teacher, classroom and timeslot exist
 
-	boundsPenalty := populationSize * len(comparisonChecks) + 1
+	boundsPenalty := populationSize*len(comparisonChecks) + 1
 
 	// for each of them, mask so that it is only that section then bitshift to get the actual value, then check with constraints
-	for region, _ := range masks{
-		if OutsideRegion(c.gene, region){
+	for region, _ := range masks {
+		if OutsideRegion(c.gene, region) {
 			penalty += boundsPenalty
 		}
 	}
 	return
 }
 
-func OutsideRegion(gene uint32, region string)(isWithinRegion bool){
-	isWithinRegion = (gene & masks[region]) >> startingMotion[region] >= constraints[region]
+// check if portion of a gene is outside the constraints for a given region
+func OutsideRegion(gene uint32, region string) (isWithinRegion bool) {
+	isWithinRegion = (gene&masks[region])>>startingMotion[region] >= constraints[region]
 	return
 }
 
+// gets the content of a specific region
+func GetRegion(gene uint32, region string) (basePair uint32) {
+	basePair = (gene & masks[region]) >> startingMotion[region]
+	return
+}
 
-func GetOverlapPortions(chromosome1 chromosome, chromosome2 chromosome)(overlapPortions uint32){
+func GetOverlapPortions(chromosome1 chromosome, chromosome2 chromosome) (overlapPortions uint32) {
 	// bitwise & to find overlapping sections
 	// chromosomeOverlap := chromosome1.gene & chromosome2.gene
 
 	// go through all masks to check for identical
-	for category, mask := range masks{
+	for category, mask := range masks {
 		// apply masks and check if region is identical
-		if chromosome1.gene & mask == chromosome2.gene & mask{
+		if chromosome1.gene&mask == chromosome2.gene&mask {
 			// if conditions are met note it in overlap
 			overlapPortions |= checkMap[category]
 		}
@@ -38,13 +44,13 @@ func GetOverlapPortions(chromosome1 chromosome, chromosome2 chromosome)(overlapP
 
 }
 
-func CheckOverlapPortions(overlapPortions uint32)(checksFailed int, checkCount int){
+func CheckOverlapPortions(overlapPortions uint32) (checksFailed int, checkCount int) {
 	checkCount = len(comparisonChecks)
 	// got through all checks
 	for j := 0; j < len(comparisonChecks); j++ {
 
 		// isolate areas in check and check if equal to the check
-		if (comparisonChecks[j] & overlapPortions) == comparisonChecks[j]{
+		if (comparisonChecks[j] & overlapPortions) == comparisonChecks[j] {
 			checksFailed++
 		}
 	}
@@ -53,15 +59,19 @@ func CheckOverlapPortions(overlapPortions uint32)(checksFailed int, checkCount i
 
 }
 
-func GetOverlap(c chromosome, population []chromosome)(overlapCount int, totalCount int){
-	var(
-		overlapPortions   uint32
-		checksFailed      int
-		checkCount        int
+func GetOverlap(c chromosome, population []chromosome) (overlapCount int, totalCount int) {
+	var (
+		overlapPortions uint32
+		checksFailed    int
+		checkCount      int
 	)
 
 	// for each member of the population
 	for i := 0; i < len(population); i++ {
+		if population[i].id == c.id {
+			continue
+		}
+
 		// get the overlap between the member and the current chromosome
 		overlapPortions = GetOverlapPortions(c, population[i])
 
@@ -76,12 +86,12 @@ func GetOverlap(c chromosome, population []chromosome)(overlapCount int, totalCo
 
 }
 
-func GetFitness(c chromosome, population []chromosome)(fitness float64){
-	var(
-		overlapCount      int
-		totalChecks       int
-		overlap           float64
-		total             float64
+func GetFitness(c chromosome, population []chromosome) (fitness float64) {
+	var (
+		overlapCount int
+		totalChecks  int
+		overlap      float64
+		total        float64
 	)
 
 	// get the overlap
@@ -92,7 +102,7 @@ func GetFitness(c chromosome, population []chromosome)(fitness float64){
 
 	// calculate GetFitness
 	overlap, total = float64(overlapCount), float64(totalChecks)
-	fitness = (total - overlap)/ total
+	fitness = (total - overlap) / total
 
 	return
 
@@ -100,13 +110,16 @@ func GetFitness(c chromosome, population []chromosome)(fitness float64){
 
 // calculate fitness for population
 
-func GetMeanPopulationFitness(population []chromosome)(fitness float64){
-
-	for _, chromo := range population{
+func GetMeanPopulationFitness(population []chromosome) (fitness float64) {
+	var fitChanged = 0
+	for _, chromo := range population {
+		prev := chromo.fitness
 		chromo.fitness = GetFitness(chromo, population)
+		if prev != chromo.fitness {
+			fitChanged++
+		}
 		fitness += chromo.fitness
 	}
 	fitness /= float64(len(population))
-
 	return
 }

@@ -1,2 +1,1 @@
-package timetable
-
+package main

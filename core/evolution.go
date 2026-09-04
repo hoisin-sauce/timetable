@@ -1,13 +1,24 @@
-package timetable
+package main
 
-import "slices"
-import "math/rand/v2"
+import (
+	"math/rand/v2"
+	"slices"
+)
 
-func SelectElites(n int, population []chromosome)(elites []chromosome){
-	elites = population[:n]
+//select elite members of the population
+func SelectElites(n int, population []chromosome) (elites []chromosome) {
+	if n == 0 {
+		return
+	}
+
+    //avoid issues with referencing slices by duplicating the population in memory
+	var populationByValue []chromosome = make([]chromosome, len(population))
+	copy(populationByValue, population)
+
+	elites = populationByValue[:n]
 	elites = Quicksort(elites, 0, n-1) // ascending quicksort on fitness
-	for n=n; n < len(population); n++{
-		if population[n].fitness > elites[0].fitness{
+	for n = n; n < len(population); n++ {
+		if population[n].fitness > elites[0].fitness {
 			elites = Insert(elites, population[n]) // insertion sort removing the 1st item
 		}
 	}
@@ -15,54 +26,57 @@ func SelectElites(n int, population []chromosome)(elites []chromosome){
 	return
 }
 
-func SelectElitesQsort(n int, population []chromosome)(elites []chromosome){
-	elites = Quicksort(population, 0, len(population) - 1)[:n]
+//quicksort the elites
+func SelectElitesQsort(n int, population []chromosome) (elites []chromosome) {
+	elites = Quicksort(population, 0, len(population)-1)[:n]
 	return
 }
 
-func Insert(elites []chromosome, newElite chromosome)(Nelites[] chromosome){
+//insert single elite
+func Insert(elites []chromosome, newElite chromosome) (Nelites []chromosome) {
 	Nelites = elites
 	Nelites[0] = newElite
-	for i:= 0; i < len(elites) - 1; i++{
-		if elites[i].fitness > elites[i + 1].fitness{
-			elites[i], elites[i + 1] = elites[i + 1], elites[i]
+	for i := 0; i < len(elites)-1; i++ {
+		if elites[i].fitness > elites[i+1].fitness {
+			elites[i], elites[i+1] = elites[i+1], elites[i]
 		}
 	}
 	return
 }
 
-func Quicksort(elites []chromosome, min int, max int)(outputElites []chromosome){
+//standard quicksort operation
+func Quicksort(elites []chromosome, min int, max int) (outputElites []chromosome) {
 	var (
-		left int
-		right int
+		left       int
+		right      int
 		pivotIndex int
-		pivot float64
+		pivot      float64
 	)
 
 	left, right = min, max
 	pivotIndex = (min + max) / 2 // no need for div operator with type int
 	pivot = elites[pivotIndex].fitness
 
-	for left <= right{
-		for elites[left].fitness < pivot && left < max{
+	for left <= right {
+		for elites[left].fitness < pivot && left < max {
 			left++
 		}
 
-		for elites[right].fitness > pivot && right > min{
+		for elites[right].fitness > pivot && right > min {
 			right--
 		}
 
-		if left <= right{
+		if left <= right {
 			elites[right], elites[left] = elites[left], elites[right]
 			left++
 			right--
 		}
 	}
 
-	if min < right{
+	if min < right {
 		elites = Quicksort(elites, min, right)
 	}
-	if max > left{
+	if max > left {
 		elites = Quicksort(elites, left, max)
 	}
 
@@ -70,27 +84,40 @@ func Quicksort(elites []chromosome, min int, max int)(outputElites []chromosome)
 	return
 }
 
-func CreateMutations(population []chromosome, elites []chromosome){
+//create mutations within the population
+func CreateMutations(population []chromosome, elites []chromosome) {
 	var fitness float64
 	var mutated chromosome
-	for i, chromo := range population{
-		if !slices.Contains(elites, chromo){
+	var monteCarloException int = 0
+	var mutations int = 0
+
+	for i, chromo := range population {
+	    //check if in elites
+		if !slices.Contains(elites, chromo) {
+		    //mutate and check fitness
 			mutated = MutateChromosome(chromo)
 			fitness = GetFitness(mutated, population)
 
-			if fitness < chromo.fitness && rand.Float64() <= monteCarloConstant{
+            //if improvement or a random chance given that it is not out of bounds
+            //keep the changes
+			if fitness < chromo.fitness && rand.Float64() <= monteCarloConstant { //technique is part of monte carlo markov chains
+				monteCarloException++
+				continue
+			} else if GetBoundsPenalty(mutated, 1) > GetBoundsPenalty(chromo, 1) {
 				continue
 			}
 
+			mutations++
 			mutated.fitness = fitness
 			population[i] = mutated
 		}
 	}
 }
 
-func MutateChromosome(chromo chromosome)chromosome{
+func MutateChromosome(chromo chromosome) chromosome {
+    //apply random changes on non protected areas of the chromosome, subject and class do not change
 	var bit uint32
-	for bit == 0{
+	for bit == 0 {
 		bit = (^protectedGene) & (1 << rand.IntN(28))
 	}
 
